@@ -18,6 +18,7 @@ package core
 
 import (
 	"bytes"
+	"embed"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -41,6 +42,9 @@ import (
 
 //go:generate go run github.com/fjl/gencodec -type Genesis -field-override genesisSpecMarshaling -out gen_genesis.go
 //go:generate go run github.com/fjl/gencodec -type GenesisAccount -field-override genesisAccountMarshaling -out gen_genesis_account.go
+
+//go:embed allocs
+var allocs embed.FS
 
 var errGenesisNoConfig = errors.New("genesis has no chain configuration")
 
@@ -185,6 +189,10 @@ func CommitGenesisState(db ethdb.Database, hash common.Hash) error {
 		// - private network, can't recover
 		var genesis *Genesis
 		switch hash {
+		case params.P202MainnetGenesisHash:
+			genesis = DefaultP202MainnetGenesisBlock()
+		case params.P202TestnetGenesisHash:
+			genesis = DefaultP202TestnetGenesisBlock()
 		case params.MainnetGenesisHash:
 			genesis = DefaultGenesisBlock()
 		case params.RopstenGenesisHash:
@@ -427,6 +435,10 @@ func (g *Genesis) configOrDefault(ghash common.Hash) *params.ChainConfig {
 		return g.Config
 	case ghash == params.MainnetGenesisHash:
 		return params.MainnetChainConfig
+	case ghash == params.P202MainnetGenesisHash:
+		return params.P202MainnetChainConfig
+	case ghash == params.P202TestnetGenesisHash:
+		return params.P202TestnetChainConfig
 	case ghash == params.RopstenGenesisHash:
 		return params.RopstenChainConfig
 	case ghash == params.SepoliaGenesisHash:
@@ -520,6 +532,32 @@ func (g *Genesis) MustCommit(db ethdb.Database) *types.Block {
 		panic(err)
 	}
 	return block
+}
+
+// DefaultP202MainnetGenesisBlock returns the Project202 main network genesis block.
+func DefaultP202MainnetGenesisBlock() *Genesis {
+	return &Genesis{
+		Config:     params.P202MainnetChainConfig,
+		Nonce:      0,
+		ExtraData:  hexutil.MustDecode("0x0000000000000000000000000000000000000000000000000000000000000000000100ebac6705e9a7e83fadd03b3322d240fe4d0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
+		GasLimit:   10000000,
+		Difficulty: big.NewInt(1),
+		Timestamp:  1666699200,
+		Alloc:      readPrealloc("allocs/p202_mainnet.json"),
+	}
+}
+
+// DefaultP202TestnetGenesisBlock returns the Project202 main network genesis block.
+func DefaultP202TestnetGenesisBlock() *Genesis {
+	return &Genesis{
+		Config:     params.P202TestnetChainConfig,
+		Nonce:      0,
+		ExtraData:  hexutil.MustDecode("0x000000000000000000000000000000000000000000000000000000000000000000010a6f578d84db917c41ad6e28f603fc8979fd0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
+		GasLimit:   10000000,
+		Difficulty: big.NewInt(1),
+		Timestamp:  1666612800,
+		Alloc:      readPrealloc("allocs/p202_testnet.json"),
+	}
 }
 
 // DefaultGenesisBlock returns the Ethereum main net genesis block.
@@ -632,6 +670,21 @@ func decodePrealloc(data string) GenesisAlloc {
 	ga := make(GenesisAlloc, len(p))
 	for _, account := range p {
 		ga[common.BigToAddress(account.Addr)] = GenesisAccount{Balance: account.Balance}
+	}
+	return ga
+}
+
+func readPrealloc(filename string) GenesisAlloc {
+	f, err := allocs.Open(filename)
+	if err != nil {
+		panic(fmt.Sprintf("Could not open genesis preallocation for %s: %v", filename, err))
+	}
+	defer f.Close()
+	decoder := json.NewDecoder(f)
+	ga := make(GenesisAlloc)
+	err = decoder.Decode(&ga)
+	if err != nil {
+		panic(fmt.Sprintf("Could not parse genesis preallocation for %s: %v", filename, err))
 	}
 	return ga
 }

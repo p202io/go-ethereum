@@ -26,6 +26,24 @@ import (
 	"github.com/ethereum/go-ethereum/params"
 )
 
+// P202MainnetGenesis returns the JSON spec to use for the Project202 main network.
+func P202MainnetGenesis() string {
+	enc, err := json.Marshal(core.DefaultP202MainnetGenesisBlock())
+	if err != nil {
+		panic(err)
+	}
+	return string(enc)
+}
+
+// P202TestnetGenesis returns the JSON spec to use for the Project202 test network.
+func P202TestnetGenesis() string {
+	enc, err := json.Marshal(core.DefaultP202TestnetGenesisBlock())
+	if err != nil {
+		panic(err)
+	}
+	return string(enc)
+}
+
 // MainnetGenesis returns the JSON spec to use for the main Ethereum network. It
 // is actually empty since that defaults to the hard coded binary genesis block.
 func MainnetGenesis() string {
@@ -71,8 +89,8 @@ func GoerliGenesis() string {
 // FoundationBootnodes returns the enode URLs of the P2P bootstrap nodes operated
 // by the foundation running the V5 discovery protocol.
 func FoundationBootnodes() *Enodes {
-	nodes := &Enodes{nodes: make([]*enode.Node, len(params.MainnetBootnodes))}
-	for i, url := range params.MainnetBootnodes {
+	nodes := &Enodes{nodes: make([]*enode.Node, len(params.P202TestnetBootnodes))} // P202_TODO
+	for i, url := range params.P202TestnetBootnodes { // P202_TODO
 		var err error
 		nodes.nodes[i], err = enode.Parse(enode.ValidSchemes, url)
 		if err != nil {
