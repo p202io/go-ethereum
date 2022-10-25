@@ -81,7 +81,7 @@ var (
 		ArrowGlacierBlock:   nil,
 		GrayGlacierBlock:    nil,
 		TerminalTotalDifficulty:       big.NewInt(10000),
-		TerminalTotalDifficultyPassed: false,
+		TerminalTotalDifficultyPassed: true,
 		MergeNetsplitBlock:            big.NewInt(5001),
 		Clique: &CliqueConfig{
 			Period: 3,
