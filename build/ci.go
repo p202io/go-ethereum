@@ -116,7 +116,7 @@ var (
 
 	// A debian package is created for all executables listed here.
 	debEthereum = debPackage{
-		Name:        "project202",
+		Name:        "ethereum",
 		Version:     params.Version,
 		Executables: debExecutables,
 	}
@@ -827,7 +827,7 @@ func (d debExecutable) Package() string {
 func newDebMetadata(distro, goboot, author string, env build.Environment, t time.Time, name string, version string, exes []debExecutable) debMetadata {
 	if author == "" {
 		// No signing key, use default author.
-		author = "Project202 <support@p202.io>"
+		author = "Ethereum Builds <fjl@ethereum.org>"
 	}
 	return debMetadata{
 		GoBootPackage: goboot,
@@ -892,7 +892,7 @@ func (meta debMetadata) ExeConflicts(exe debExecutable) string {
 		// be preferred and the conflicting files should be handled via
 		// alternates. We might do this eventually but using a conflict is
 		// easier now.
-		return "project202, " + exe.Package()
+		return "ethereum, " + exe.Package()
 	}
 	return ""
 }

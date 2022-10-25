@@ -27,7 +27,7 @@ import (
 
 // Genesis hashes to enforce below configs on.
 var (
-	P202MainnetGenesisHash = common.HexToHash("0xdffc5c4e196ed27d052a58ee8d8e9dd09def276f81f38478687ae46a00cb9cb1") // P202_TODO
+	P202MainnetGenesisHash = common.HexToHash("0x9f3199ab2a57514984cefef796e110b7ea1987605aa8ff38410417fbd1b459c2") // P202_TODO
 	P202TestnetGenesisHash = common.HexToHash("0x7f300edf428b6ddf6aac07d86546f90a674ea7559089aa71cf0836858da003d8") // P202_TODO
 	MainnetGenesisHash = common.HexToHash("0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3")
 	RopstenGenesisHash = common.HexToHash("0x41941023680923e0fe4d74a34bdac8141f2540e3ae90623718e47d66d1ca4a2d")
@@ -81,8 +81,8 @@ var (
 		ArrowGlacierBlock:   nil,
 		GrayGlacierBlock:    nil,
 		TerminalTotalDifficulty:       big.NewInt(10000),
-		TerminalTotalDifficultyPassed: true,
-		MergeNetsplitBlock:            big.NewInt(5000),
+		TerminalTotalDifficultyPassed: false,
+		MergeNetsplitBlock:            big.NewInt(5001),
 		Clique: &CliqueConfig{
 			Period: 3,
 			Epoch:  30000,
@@ -128,7 +128,7 @@ var (
 		GrayGlacierBlock:    nil,
 		TerminalTotalDifficulty:       big.NewInt(1000),
 		TerminalTotalDifficultyPassed: true,
-		MergeNetsplitBlock:            big.NewInt(500),
+		MergeNetsplitBlock:            big.NewInt(501),
 		Clique: &CliqueConfig{
 			Period: 3,
 			Epoch:  30000,
