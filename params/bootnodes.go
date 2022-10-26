@@ -111,7 +111,7 @@ var V5Bootnodes = []string{
 }
 
 const dnsPrefix = "enrtree://AKA3AM6LPBYEUDMVNU3BSVQJ5AD45Y7YPOHJLEF6W26QOE4VTUDPE@"
-const dnsPrefixP202 = "enrtree://AKA3AM6LPBYEUDMVNU3BSVQJ5AD45Y7YPOHJLEF6W26QOE4VTUDPE@" // P202_TODO
+//const dnsPrefixP202 = "enrtree://AKA3AM6LPBYEUDMVNU3BSVQJ5AD45Y7YPOHJLEF6W26QOE4VTUDPE@" // P202_TODO
 
 // KnownDNSNetwork returns the address of a public DNS-based node list for the given
 // genesis hash and protocol. See https://github.com/ethereum/discv4-dns-lists for more
@@ -121,10 +121,10 @@ func KnownDNSNetwork(genesis common.Hash, protocol string) string {
 	switch genesis {
 	case P202MainnetGenesisHash:
 		net = "p202-mainnet"
-		return dnsPrefixP202 + protocol + ".mainnet.dns.p202.io" // P202_TODO
+		//return dnsPrefixP202 + protocol + ".mainnet.dns.p202.io" // P202_TODO
 	case P202TestnetGenesisHash:
 		net = "p202-testnet"
-		return dnsPrefixP202 + protocol + ".testnet.dns.p202.io" // P202_TODO
+		//return dnsPrefixP202 + protocol + ".testnet.dns.p202.io" // P202_TODO
 	case MainnetGenesisHash:
 		net = "mainnet"
 	case RopstenGenesisHash:
