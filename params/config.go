@@ -28,7 +28,7 @@ import (
 // Genesis hashes to enforce below configs on.
 var (
 	P202MainnetGenesisHash = common.HexToHash("0x6f56819383be980f8e03dc365e4d54b47c4cc174b8f26102a40c395216632241") // P202_TODO
-	P202TestnetGenesisHash = common.HexToHash("0xb5dfe213d0ddf1786e62ee96fb01d8b888825fa5f4d51f0f630c47967424dbbc") // P202_TODO
+	P202TestnetGenesisHash = common.HexToHash("0xc4758a8d0559e1717e35ee346cbb68dcc437d24581c4e62faf178949228c45c8") // P202_TODO
 	MainnetGenesisHash = common.HexToHash("0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3")
 	RopstenGenesisHash = common.HexToHash("0x41941023680923e0fe4d74a34bdac8141f2540e3ae90623718e47d66d1ca4a2d")
 	SepoliaGenesisHash = common.HexToHash("0x25a5cc106eea7138acab33231d7160d69cb777ee0c2c553fcddf5138993e6dd9")
