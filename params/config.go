@@ -80,9 +80,9 @@ var (
 		LondonBlock:         big.NewInt(0),
 		ArrowGlacierBlock:   nil,
 		GrayGlacierBlock:    nil,
-		TerminalTotalDifficulty:       big.NewInt(6000),
+		TerminalTotalDifficulty:       big.NewInt(20000),
 		TerminalTotalDifficultyPassed: true,
-		MergeNetsplitBlock:            big.NewInt(3001),
+		MergeNetsplitBlock:            big.NewInt(10000),
 		Clique: &CliqueConfig{
 			Period: 3,
 			Epoch:  30000,
