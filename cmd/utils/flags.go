@@ -121,8 +121,18 @@ var (
 	}
 	NetworkIdFlag = &cli.Uint64Flag{
 		Name:     "networkid",
-		Usage:    "Explicitly set network id (integer)(For testnets: use --ropsten, --rinkeby, --goerli instead)",
+		Usage:    "Explicitly set network id (integer)(For testnets: use --p202-mainnet --p202-testnet instead)",
 		Value:    ethconfig.Defaults.NetworkId,
+		Category: flags.EthCategory,
+	}
+	P202MainnetFlag = &cli.BoolFlag{
+		Name:     "p202-mainnet",
+		Usage:    "Project202 mainnet",
+		Category: flags.EthCategory,
+	}
+	P202TestnetFlag = &cli.BoolFlag{
+		Name:     "p202-testnet",
+		Usage:    "Project202 testnet",
 		Category: flags.EthCategory,
 	}
 	MainnetFlag = &cli.BoolFlag{
@@ -996,6 +1006,7 @@ var (
 var (
 	// TestnetFlags is the flag group of all built-in supported testnets.
 	TestnetFlags = []cli.Flag{
+		P202TestnetFlag,
 		RopstenFlag,
 		RinkebyFlag,
 		GoerliFlag,
@@ -1003,7 +1014,7 @@ var (
 		KilnFlag,
 	}
 	// NetworkFlags is the flag group of all built-in supported networks.
-	NetworkFlags = append([]cli.Flag{MainnetFlag}, TestnetFlags...)
+	NetworkFlags = append([]cli.Flag{P202MainnetFlag, MainnetFlag}, TestnetFlags...)
 
 	// DatabasePathFlags is the flag group of all database path flags.
 	DatabasePathFlags = []cli.Flag{
@@ -1019,6 +1030,9 @@ var (
 // then a subdirectory of the specified datadir will be used.
 func MakeDataDir(ctx *cli.Context) string {
 	if path := ctx.String(DataDirFlag.Name); path != "" {
+		if ctx.Bool(P202TestnetFlag.Name) {
+			return filepath.Join(path, "p202-testnet")
+		}
 		if ctx.Bool(RopstenFlag.Name) {
 			// Maintain compatibility with older Geth configurations storing the
 			// Ropsten database in `testnet` instead of `ropsten`.
@@ -1078,10 +1092,14 @@ func setNodeUserIdent(ctx *cli.Context, cfg *node.Config) {
 // setBootstrapNodes creates a list of bootstrap nodes from the command line
 // flags, reverting to pre-configured ones if none have been specified.
 func setBootstrapNodes(ctx *cli.Context, cfg *p2p.Config) {
-	urls := params.MainnetBootnodes
+	urls := params.MainnetBootnodes // P202_TODO
 	switch {
 	case ctx.IsSet(BootnodesFlag.Name):
 		urls = SplitAndTrim(ctx.String(BootnodesFlag.Name))
+	case ctx.Bool(P202MainnetFlag.Name):
+		urls = params.P202MainnetBootnodes
+	case ctx.Bool(P202TestnetFlag.Name):
+		urls = params.P202TestnetBootnodes
 	case ctx.Bool(RopstenFlag.Name):
 		urls = params.RopstenBootnodes
 	case ctx.Bool(SepoliaFlag.Name):
@@ -1530,6 +1548,10 @@ func SetDataDir(ctx *cli.Context, cfg *node.Config) {
 		cfg.DataDir = ctx.String(DataDirFlag.Name)
 	case ctx.Bool(DeveloperFlag.Name):
 		cfg.DataDir = "" // unless explicitly requested, use memory databases
+	case ctx.Bool(P202MainnetFlag.Name) && cfg.DataDir == node.DefaultDataDir():
+		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "p202-mainnet")
+	case ctx.Bool(P202TestnetFlag.Name) && cfg.DataDir == node.DefaultDataDir():
+		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "p202-testnet")
 	case ctx.Bool(RopstenFlag.Name) && cfg.DataDir == node.DefaultDataDir():
 		// Maintain compatibility with older Geth configurations storing the
 		// Ropsten database in `testnet` instead of `ropsten`.
@@ -1875,6 +1897,18 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 	}
 	// Override any default configs for hard coded networks.
 	switch {
+	case ctx.Bool(P202MainnetFlag.Name):
+		if !ctx.IsSet(NetworkIdFlag.Name) {
+			cfg.NetworkId = 202
+		}
+		cfg.Genesis = core.DefaultP202MainnetGenesisBlock()
+		SetDNSDiscoveryDefaults(cfg, params.P202MainnetGenesisHash)
+	case ctx.Bool(P202TestnetFlag.Name):
+		if !ctx.IsSet(NetworkIdFlag.Name) {
+			cfg.NetworkId = 10202
+		}
+		cfg.Genesis = core.DefaultP202TestnetGenesisBlock()
+		SetDNSDiscoveryDefaults(cfg, params.P202TestnetGenesisHash)
 	case ctx.Bool(MainnetFlag.Name):
 		if !ctx.IsSet(NetworkIdFlag.Name) {
 			cfg.NetworkId = 1
@@ -2198,6 +2232,10 @@ func DialRPCWithHeaders(endpoint string, headers []string) (*rpc.Client, error) 
 func MakeGenesis(ctx *cli.Context) *core.Genesis {
 	var genesis *core.Genesis
 	switch {
+	case ctx.Bool(P202MainnetFlag.Name):
+		genesis = core.DefaultP202MainnetGenesisBlock()
+	case ctx.Bool(P202TestnetFlag.Name):
+		genesis = core.DefaultP202TestnetGenesisBlock()
 	case ctx.Bool(MainnetFlag.Name):
 		genesis = core.DefaultGenesisBlock()
 	case ctx.Bool(RopstenFlag.Name):

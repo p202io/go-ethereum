@@ -27,6 +27,8 @@ import (
 
 // Genesis hashes to enforce below configs on.
 var (
+	P202MainnetGenesisHash = common.HexToHash("0x8b9e4a3cfa2d6e7d6594653078414a4f62429b15a08b3f1effa4cad89daaeb14")
+	P202TestnetGenesisHash = common.HexToHash("0xc4758a8d0559e1717e35ee346cbb68dcc437d24581c4e62faf178949228c45c8")
 	MainnetGenesisHash = common.HexToHash("0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3")
 	RopstenGenesisHash = common.HexToHash("0x41941023680923e0fe4d74a34bdac8141f2540e3ae90623718e47d66d1ca4a2d")
 	SepoliaGenesisHash = common.HexToHash("0x25a5cc106eea7138acab33231d7160d69cb777ee0c2c553fcddf5138993e6dd9")
@@ -38,6 +40,8 @@ var (
 // TrustedCheckpoints associates each known checkpoint with the genesis hash of
 // the chain it belongs to.
 var TrustedCheckpoints = map[common.Hash]*TrustedCheckpoint{
+	//P202MainnetGenesisHash: P202MainnetTrustedCheckpoint, // P202_TODO
+	//P202TestnetGenesisHash: P202TestnetTrustedCheckpoint, // P202_TODO
 	MainnetGenesisHash: MainnetTrustedCheckpoint,
 	RopstenGenesisHash: RopstenTrustedCheckpoint,
 	SepoliaGenesisHash: SepoliaTrustedCheckpoint,
@@ -48,6 +52,8 @@ var TrustedCheckpoints = map[common.Hash]*TrustedCheckpoint{
 // CheckpointOracles associates each known checkpoint oracles with the genesis hash of
 // the chain it belongs to.
 var CheckpointOracles = map[common.Hash]*CheckpointOracleConfig{
+	//P202MainnetGenesisHash: P202MainnetCheckpointOracle, // P202_TODO
+	//P202TestnetGenesisHash: P202TestnetCheckpointOracle, // P202_TODO
 	MainnetGenesisHash: MainnetCheckpointOracle,
 	RopstenGenesisHash: RopstenCheckpointOracle,
 	RinkebyGenesisHash: RinkebyCheckpointOracle,
@@ -55,6 +61,98 @@ var CheckpointOracles = map[common.Hash]*CheckpointOracleConfig{
 }
 
 var (
+	// P202MainnetChainConfig is the chain parameters to run a node on the main network.
+	P202MainnetChainConfig = &ChainConfig{
+		ChainID:             big.NewInt(202),
+		HomesteadBlock:      big.NewInt(0),
+		DAOForkBlock:        big.NewInt(0),
+		DAOForkSupport:      true,
+		EIP150Block:         big.NewInt(0),
+		EIP150Hash:          common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
+		EIP155Block:         big.NewInt(0),
+		EIP158Block:         big.NewInt(0),
+		ByzantiumBlock:      big.NewInt(0),
+		ConstantinopleBlock: big.NewInt(0),
+		PetersburgBlock:     big.NewInt(0),
+		IstanbulBlock:       big.NewInt(0),
+		MuirGlacierBlock:    nil,
+		BerlinBlock:         big.NewInt(0),
+		LondonBlock:         big.NewInt(0),
+		ArrowGlacierBlock:   nil,
+		GrayGlacierBlock:    nil,
+		TerminalTotalDifficulty:       big.NewInt(60000),
+		TerminalTotalDifficultyPassed: true,
+		MergeNetsplitBlock:            big.NewInt(30001),
+		Clique: &CliqueConfig{
+			Period: 3,
+			Epoch:  30000,
+		},
+	}
+
+	// P202MainnetTrustedCheckpoint contains the light client trusted checkpoint for the main network.
+	/*P202MainnetTrustedCheckpoint = &TrustedCheckpoint{
+		SectionIndex: 0, // P202_TODO
+		SectionHead:  common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"), // P202_TODO
+		CHTRoot:      common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"), // P202_TODO
+		BloomRoot:    common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"), // P202_TODO
+	}
+
+	// P202MainnetCheckpointOracle contains a set of configs for the main network oracle.
+	P202MainnetCheckpointOracle = &CheckpointOracleConfig{
+		Address: common.HexToAddress("0x0000000000000000000000000000000000000000"), // P202_TODO
+		Signers: []common.Address{
+			common.HexToAddress("0x0000000000000000000000000000000000000000"), // P202_TODO
+			common.HexToAddress("0x0000000000000000000000000000000000000000"), // P202_TODO
+		},
+		Threshold: 2,
+	}*/
+
+	// P202TestnetChainConfig is the chain parameters to run a node on the test network.
+	P202TestnetChainConfig = &ChainConfig{
+		ChainID:             big.NewInt(10202),
+		HomesteadBlock:      big.NewInt(0),
+		DAOForkBlock:        big.NewInt(0),
+		DAOForkSupport:      true,
+		EIP150Block:         big.NewInt(0),
+		EIP150Hash:          common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
+		EIP155Block:         big.NewInt(0),
+		EIP158Block:         big.NewInt(0),
+		ByzantiumBlock:      big.NewInt(0),
+		ConstantinopleBlock: big.NewInt(0),
+		PetersburgBlock:     big.NewInt(0),
+		IstanbulBlock:       big.NewInt(0),
+		MuirGlacierBlock:    nil,
+		BerlinBlock:         big.NewInt(0),
+		LondonBlock:         big.NewInt(0),
+		ArrowGlacierBlock:   nil,
+		GrayGlacierBlock:    nil,
+		TerminalTotalDifficulty:       big.NewInt(1000),
+		TerminalTotalDifficultyPassed: true,
+		MergeNetsplitBlock:            big.NewInt(501),
+		Clique: &CliqueConfig{
+			Period: 3,
+			Epoch:  30000,
+		},
+	}
+
+	// P202TestnetTrustedCheckpoint contains the light client trusted checkpoint for the test network.
+	/*P202TestnetTrustedCheckpoint = &TrustedCheckpoint{
+		SectionIndex: 0, // P202_TODO
+		SectionHead:  common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"), // P202_TODO
+		CHTRoot:      common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"), // P202_TODO
+		BloomRoot:    common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"), // P202_TODO
+	}
+
+	// P202TestnetCheckpointOracle contains a set of configs for the test network oracle.
+	P202TestnetCheckpointOracle = &CheckpointOracleConfig{
+		Address: common.HexToAddress("0x0000000000000000000000000000000000000000"), // P202_TODO
+		Signers: []common.Address{
+			common.HexToAddress("0x0000000000000000000000000000000000000000"), // P202_TODO
+			common.HexToAddress("0x0000000000000000000000000000000000000000"), // P202_TODO
+		},
+		Threshold: 2,
+	}*/
+
 	MainnetTerminalTotalDifficulty, _ = new(big.Int).SetString("58_750_000_000_000_000_000_000", 0)
 
 	// MainnetChainConfig is the chain parameters to run a node on the main network.
@@ -286,6 +384,8 @@ var (
 
 // NetworkNames are user friendly names to use in the chain spec banner.
 var NetworkNames = map[string]string{
+	P202MainnetChainConfig.ChainID.String(): "p202-mainnet", // P202_TODO
+	P202TestnetChainConfig.ChainID.String(): "p202-testnet", // P202_TODO
 	MainnetChainConfig.ChainID.String(): "mainnet",
 	RopstenChainConfig.ChainID.String(): "ropsten",
 	RinkebyChainConfig.ChainID.String(): "rinkeby",
