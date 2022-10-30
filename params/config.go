@@ -80,9 +80,9 @@ var (
 		LondonBlock:         big.NewInt(0),
 		ArrowGlacierBlock:   nil,
 		GrayGlacierBlock:    nil,
-		TerminalTotalDifficulty:       big.NewInt(1000),
+		TerminalTotalDifficulty:       big.NewInt(2000),
 		TerminalTotalDifficultyPassed: true,
-		MergeNetsplitBlock:            big.NewInt(501),
+		MergeNetsplitBlock:            big.NewInt(1001),
 		Clique: &CliqueConfig{
 			Period: 3,
 			Epoch:  30000,
@@ -126,9 +126,9 @@ var (
 		LondonBlock:         big.NewInt(0),
 		ArrowGlacierBlock:   nil,
 		GrayGlacierBlock:    nil,
-		TerminalTotalDifficulty:       big.NewInt(2000),
+		TerminalTotalDifficulty:       big.NewInt(1000),
 		TerminalTotalDifficultyPassed: true,
-		MergeNetsplitBlock:            big.NewInt(1001),
+		MergeNetsplitBlock:            big.NewInt(501),
 		Clique: &CliqueConfig{
 			Period: 3,
 			Epoch:  30000,
