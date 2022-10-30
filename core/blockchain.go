@@ -77,10 +77,9 @@ var (
 	blockExecutionTimer  = metrics.NewRegisteredTimer("chain/execution", nil)
 	blockWriteTimer      = metrics.NewRegisteredTimer("chain/write", nil)
 
-	blockReorgMeter         = metrics.NewRegisteredMeter("chain/reorg/executes", nil)
-	blockReorgAddMeter      = metrics.NewRegisteredMeter("chain/reorg/add", nil)
-	blockReorgDropMeter     = metrics.NewRegisteredMeter("chain/reorg/drop", nil)
-	blockReorgInvalidatedTx = metrics.NewRegisteredMeter("chain/reorg/invalidTx", nil)
+	blockReorgMeter     = metrics.NewRegisteredMeter("chain/reorg/executes", nil)
+	blockReorgAddMeter  = metrics.NewRegisteredMeter("chain/reorg/add", nil)
+	blockReorgDropMeter = metrics.NewRegisteredMeter("chain/reorg/drop", nil)
 
 	blockPrefetchExecuteTimer   = metrics.NewRegisteredTimer("chain/prefetch/executes", nil)
 	blockPrefetchInterruptMeter = metrics.NewRegisteredMeter("chain/prefetch/interrupts", nil)
@@ -124,7 +123,7 @@ const (
 	BlockChainVersion uint64 = 8
 )
 
-// CacheConfig contains the configuration values for the trie caching/pruning
+// CacheConfig contains the configuration values for the trie database
 // that's resident in a blockchain.
 type CacheConfig struct {
 	TrieCleanLimit      int           // Memory allowance (MB) to use for caching trie nodes in memory
@@ -1409,7 +1408,7 @@ func (bc *BlockChain) writeBlockAndSetHead(block *types.Block, receipts []*types
 		if len(logs) > 0 {
 			bc.logsFeed.Send(logs)
 		}
-		// In theory we should fire a ChainHeadEvent when we inject
+		// In theory, we should fire a ChainHeadEvent when we inject
 		// a canonical block, but sometimes we can insert a batch of
 		// canonical blocks. Avoid firing too many ChainHeadEvents,
 		// we will fire an accumulated ChainHeadEvent and disable fire
@@ -1492,7 +1491,7 @@ func (bc *BlockChain) insertChain(chain types.Blocks, verifySeals, setHead bool)
 	}
 
 	// Start a parallel signature recovery (signer will fluke on fork transition, minimal perf loss)
-	senderCacher.recoverFromBlocks(types.MakeSigner(bc.chainConfig, chain[0].Number()), chain)
+	SenderCacher.RecoverFromBlocks(types.MakeSigner(bc.chainConfig, chain[0].Number()), chain)
 
 	var (
 		stats     = insertStats{startTime: mclock.Now()}
@@ -1914,7 +1913,7 @@ func (bc *BlockChain) insertSideChain(block *types.Block, it *insertIterator) (i
 	// Import all the pruned blocks to make the state available
 	var (
 		blocks []*types.Block
-		memory common.StorageSize
+		memory uint64
 	)
 	for i := len(hashes) - 1; i >= 0; i-- {
 		// Append the next block to our batch

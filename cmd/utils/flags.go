@@ -18,6 +18,7 @@
 package utils
 
 import (
+	"bytes"
 	"context"
 	"crypto/ecdsa"
 	"errors"
@@ -36,9 +37,12 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/fdlimit"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/consensus/ethash"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/rawdb"
+	"github.com/ethereum/go-ethereum/core/txpool"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/eth"
@@ -67,6 +71,7 @@ import (
 	"github.com/ethereum/go-ethereum/p2p/nat"
 	"github.com/ethereum/go-ethereum/p2p/netutil"
 	"github.com/ethereum/go-ethereum/params"
+	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/ethereum/go-ethereum/rpc"
 	pcsclite "github.com/gballet/go-libpcsclite"
 	gopsutil "github.com/shirou/gopsutil/mem"
@@ -400,13 +405,13 @@ var (
 	TxPoolJournalFlag = &cli.StringFlag{
 		Name:     "txpool.journal",
 		Usage:    "Disk journal for local transaction to survive node restarts",
-		Value:    core.DefaultTxPoolConfig.Journal,
+		Value:    txpool.DefaultConfig.Journal,
 		Category: flags.TxPoolCategory,
 	}
 	TxPoolRejournalFlag = &cli.DurationFlag{
 		Name:     "txpool.rejournal",
 		Usage:    "Time interval to regenerate the local transaction journal",
-		Value:    core.DefaultTxPoolConfig.Rejournal,
+		Value:    txpool.DefaultConfig.Rejournal,
 		Category: flags.TxPoolCategory,
 	}
 	TxPoolPriceLimitFlag = &cli.Uint64Flag{
@@ -673,10 +678,17 @@ var (
 		Category: flags.LoggingCategory,
 	}
 
+	// MISC settings
 	IgnoreLegacyReceiptsFlag = &cli.BoolFlag{
 		Name:     "ignore-legacy-receipts",
 		Usage:    "Geth will start up even if there are legacy receipts in freezer",
 		Category: flags.MiscCategory,
+	}
+	SyncTargetFlag = &cli.PathFlag{
+		Name:      "synctarget",
+		Usage:     `File for containing the hex-encoded block-rlp as sync target(dev feature)`,
+		TakesFile: true,
+		Category:  flags.MiscCategory,
 	}
 
 	// RPC settings
@@ -1595,7 +1607,7 @@ func setGPO(ctx *cli.Context, cfg *gasprice.Config, light bool) {
 	}
 }
 
-func setTxPool(ctx *cli.Context, cfg *core.TxPoolConfig) {
+func setTxPool(ctx *cli.Context, cfg *txpool.Config) {
 	if ctx.IsSet(TxPoolLocalsFlag.Name) {
 		locals := strings.Split(ctx.String(TxPoolLocalsFlag.Name), ",")
 		for _, account := range locals {
@@ -1895,6 +1907,25 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 			cfg.EthDiscoveryURLs = SplitAndTrim(urls)
 		}
 	}
+	if ctx.IsSet(SyncTargetFlag.Name) {
+		path := ctx.Path(SyncTargetFlag.Name)
+		if path == "" {
+			Fatalf("Failed to resolve file path")
+		}
+		blob, err := os.ReadFile(path)
+		if err != nil {
+			Fatalf("Failed to read block file: %v", err)
+		}
+		rlpBlob, err := hexutil.Decode(string(bytes.TrimRight(blob, "\r\n")))
+		if err != nil {
+			Fatalf("Failed to decode block blob: %v", err)
+		}
+		var block types.Block
+		if err := rlp.DecodeBytes(rlpBlob, &block); err != nil {
+			Fatalf("Failed to decode block: %v", err)
+		}
+		cfg.SyncTarget = &block
+	}
 	// Override any default configs for hard coded networks.
 	switch {
 	case ctx.Bool(P202MainnetFlag.Name):
@@ -2060,6 +2091,13 @@ func RegisterEthService(stack *node.Node, cfg *ethconfig.Config) (ethapi.Backend
 		Fatalf("Failed to register the Engine API service: %v", err)
 	}
 	stack.RegisterAPIs(tracers.APIs(backend.APIBackend))
+
+	// Register the auxiliary full-sync tester service in case the sync
+	// target is configured.
+	if cfg.SyncTarget != nil && cfg.SyncMode == downloader.FullSync {
+		ethcatalyst.RegisterFullSyncTester(stack, backend, cfg.SyncTarget)
+		log.Info("Registered full-sync tester", "number", cfg.SyncTarget.NumberU64(), "hash", cfg.SyncTarget.Hash())
+	}
 	return backend.APIBackend, backend
 }
 
