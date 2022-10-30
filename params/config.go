@@ -126,9 +126,9 @@ var (
 		LondonBlock:         big.NewInt(0),
 		ArrowGlacierBlock:   nil,
 		GrayGlacierBlock:    nil,
-		TerminalTotalDifficulty:       big.NewInt(1500),
+		TerminalTotalDifficulty:       big.NewInt(2000),
 		TerminalTotalDifficultyPassed: true,
-		MergeNetsplitBlock:            big.NewInt(751),
+		MergeNetsplitBlock:            big.NewInt(1001),
 		Clique: &CliqueConfig{
 			Period: 3,
 			Epoch:  30000,
