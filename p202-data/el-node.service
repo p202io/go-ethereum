@@ -1,0 +1,25 @@
+# sudo rm /etc/systemd/system/el-node.service
+# sudo nano /etc/systemd/system/el-node.service
+# sudo systemctl daemon-reload
+# sudo systemctl start el-node
+# sudo systemctl restart el-node
+
+[Unit]
+Description=P202 EL NODE
+  Wants=syslog.target network.target
+  After=syslog.target network.target
+
+[Service]
+  User=root
+  Group=root
+  Type=simple
+  ExecStart=/data/src/node/build/bin/geth --p202-testnet --datadir=/data/blockchain/el-node --config=/data/blockchain/el-node/config.yml --gcmode=archive --http
+  WorkingDirectory=/data/blockchain/el-node
+  KillMode=process
+  KillSignal=SIGINT
+  TimeoutStopSec=90
+  Restart=on-failure
+  RestartSec=10s
+
+[Install]
+  WantedBy=multi-user.target
