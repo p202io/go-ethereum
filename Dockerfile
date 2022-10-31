@@ -21,8 +21,9 @@ FROM alpine:latest
 
 RUN apk add --no-cache ca-certificates
 COPY --from=builder /go-ethereum/build/bin/geth /usr/local/bin/
+COPY --from=builder /go-ethereum/p202-data/ /p202-data/
 
-EXPOSE 8545 8546 30303 30303/udp
+EXPOSE 8545 8546 8551 30303 30303/udp
 ENTRYPOINT ["geth"]
 
 # Add some metadata labels to help programatic image consumption
