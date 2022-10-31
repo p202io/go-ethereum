@@ -27,8 +27,8 @@ import (
 
 // Genesis hashes to enforce below configs on.
 var (
-	P202MainnetGenesisHash = common.HexToHash("0x8b9e4a3cfa2d6e7d6594653078414a4f62429b15a08b3f1effa4cad89daaeb14")
-	P202TestnetGenesisHash = common.HexToHash("0xc4758a8d0559e1717e35ee346cbb68dcc437d24581c4e62faf178949228c45c8")
+	P202MainnetGenesisHash = common.HexToHash("0x519c30685d3eabf72f39c91a980d57b4c8f0d12fb67b7b995e9894301a5f2c85")
+	P202TestnetGenesisHash = common.HexToHash("0x2c5b9af80e780787ec282f2bfb82850c21c130634ad0fdf938f973657018dc66")
 	MainnetGenesisHash = common.HexToHash("0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3")
 	RopstenGenesisHash = common.HexToHash("0x41941023680923e0fe4d74a34bdac8141f2540e3ae90623718e47d66d1ca4a2d")
 	SepoliaGenesisHash = common.HexToHash("0x25a5cc106eea7138acab33231d7160d69cb777ee0c2c553fcddf5138993e6dd9")
@@ -80,9 +80,9 @@ var (
 		LondonBlock:         big.NewInt(0),
 		ArrowGlacierBlock:   nil,
 		GrayGlacierBlock:    nil,
-		TerminalTotalDifficulty:       big.NewInt(25000),
+		TerminalTotalDifficulty:       big.NewInt(1000),
 		TerminalTotalDifficultyPassed: true,
-		MergeNetsplitBlock:            big.NewInt(12501),
+		MergeNetsplitBlock:            big.NewInt(501),
 		Clique: &CliqueConfig{
 			Period: 3,
 			Epoch:  30000,
