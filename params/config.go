@@ -84,7 +84,7 @@ var (
 		TerminalTotalDifficultyPassed: true,
 		MergeNetsplitBlock:            big.NewInt(501),
 		Clique: &CliqueConfig{
-			Period: 3,
+			Period: 5,
 			Epoch:  30000,
 		},
 	}
@@ -130,7 +130,7 @@ var (
 		TerminalTotalDifficultyPassed: true,
 		MergeNetsplitBlock:            big.NewInt(501),
 		Clique: &CliqueConfig{
-			Period: 3,
+			Period: 5,
 			Epoch:  30000,
 		},
 	}
